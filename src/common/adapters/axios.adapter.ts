@@ -6,11 +6,11 @@ import { CreateClientDto } from '../../client/dto/create-client.dto';
 import { HeaderDto } from 'src/common/dto/header.dto';
 import { ParamsDto } from 'src/product/dto/params.dto';
 import { CreateCreditDto } from 'src/credit/dto/create-credit.dto';
+import { ApproveCreditDto } from 'src/credit/dto/approve-credit.dto';
 
 @Injectable()
 export class AxiosAdapter implements HttpAdapter {
-   
-    
+     
     private axios: AxiosInstance = axios;
 
     async post<T>(url: string, apikey: string, idEmpotencyKey: string, createClientDto:CreateClientDto): Promise<T> {
@@ -57,7 +57,7 @@ export class AxiosAdapter implements HttpAdapter {
     async getProduct<T>(url: string, id: string, headers: HeaderDto, params: ParamsDto): Promise<T> {
     
         try {
-            console.log(`${url}/${id}`)
+           // console.log(`${url}/${id}`)
             const { data } = await this.axios.get<T>(`${url}/${id}`, {
                 headers: {
                     'apikey': `${headers.apikey}`,
@@ -92,5 +92,37 @@ export class AxiosAdapter implements HttpAdapter {
             throw new Error(`Error ${error}`);
         }
     }
+
+    async postApproveCredit<T>(url: string, id: string, headers: HeaderDto, approveCreditDto: ApproveCreditDto): Promise<T> {
+        try {
+            
+            //console.log(`${url}/${id}:changeState`)
+
+            const { data } = await this.axios.post<T>(`${url}/${id}:changeState`, approveCreditDto, {
+                headers: {
+                    'apikey': `${headers.apikey}`,
+                    'Accept': `${headers.Accept}`,
+                },
+            })
+            return data;
+        } catch (error) {
+            throw new Error(`Error ${error}`);
+        }
+    }
+
+    async getStatusCreditById<T>(url: string, id: string, headers: HeaderDto): Promise<T> {
+        try {
+             const { data } = await this.axios.get<T>(`${url}/${id}`, {
+                 headers: {
+                     'apikey': `${headers.apikey}`,
+                     'Accept': `${headers.Accept}`,
+                 },
+             })
+             return data;
+         } catch (error) {
+             throw new Error(`Error ${error}`);
+         }
+    }
+   
 
 }
