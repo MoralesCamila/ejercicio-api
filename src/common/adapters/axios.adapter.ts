@@ -3,10 +3,14 @@ import axios, { AxiosInstance } from 'axios';
 import { HttpAdapter } from '../interfaces/http-adapter.interface';
 import { PaginationDto } from '../dto/pagination.dto';
 import { CreateClientDto } from '../../client/dto/create-client.dto';
+import { HeaderDto } from 'src/common/dto/header.dto';
+import { ParamsDto } from 'src/product/dto/params.dto';
+import { CreateCreditDto } from 'src/credit/dto/create-credit.dto';
 
 @Injectable()
 export class AxiosAdapter implements HttpAdapter {
-
+   
+    
     private axios: AxiosInstance = axios;
 
     async post<T>(url: string, apikey: string, idEmpotencyKey: string, createClientDto:CreateClientDto): Promise<T> {
@@ -44,6 +48,45 @@ export class AxiosAdapter implements HttpAdapter {
                 }
 
             })
+            return data;
+        } catch (error) {
+            throw new Error(`Error ${error}`);
+        }
+    }
+
+    async getProduct<T>(url: string, id: string, headers: HeaderDto, params: ParamsDto): Promise<T> {
+    
+        try {
+            console.log(`${url}/${id}`)
+            const { data } = await this.axios.get<T>(`${url}/${id}`, {
+                headers: {
+                    'apikey': `${headers.apikey}`,
+                    'Accept': `${headers.Accept}`,
+                },
+                params: {
+                    'offset': `${params.offset}`,
+                    'paginationDetails': `${params.paginationDetails}`,
+                    'detailsLevel': `${params.detailsLevel}`,
+                    'limit': `${params.limit}`,
+                    'sortBy': `${params.sortBy}`,
+                }
+
+            })
+            return data;
+        } catch (error) {
+            throw new Error(`Error ${error}`);
+        }
+    }
+
+    async postCredit<T>(url: string, headers: HeaderDto, createCreditDto: CreateCreditDto): Promise<T> {
+        try {
+            const { data } = await this.axios.post<T>(url, createCreditDto, {
+                headers: {
+                    'apikey': `${headers.apikey}`,
+                    'Accept': `${headers.Accept}`,
+                },
+            
+            });
             return data;
         } catch (error) {
             throw new Error(`Error ${error}`);
